@@ -1,0 +1,27 @@
+groups:
+  - name: my-rules
+    rules:
+      - record: job:node_cpu_seconds:avg_idle # rules name
+        expr: avg without(cpu)(rate(node_cpu_seconds_total{mode="idle"}[5m]))
+
+      - alert: NodeExporterDown
+        expr: up{job="node_exporter"} == 0
+        for: 1m
+
+      - record: job:app_response_latency_seconds:rate1m
+        expr: rate(app_response_latency_seconds_sum[1m]) / rate(app_response_latency_seconds_count[1m])
+
+      - alert: AppLatencyAbove5sec
+        expr: job:app_response_latency_seconds:rate1m >= 5
+        for: 2m # 2 dkka kontrol sonrası alert çalışır
+        labels:
+          severity: critical
+        annotations:
+          summary: "App latency is over 5 seconds"
+          description: "app latency of instance {{ $labels.instance }} of job {{ $labels.job }} is {{ $value }} for more than 5 seconds"
+
+      - alert: AppLatencyAbove2sec
+        expr: 2 < job:app_response_latency_seconds:rate1m < 5
+        for: 2m # 2 dkka kontrol sonrası alert çalışır
+        labels:
+          severity: warning

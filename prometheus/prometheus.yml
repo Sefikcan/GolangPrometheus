@@ -4,6 +4,16 @@ global:
   # How frequently to evaluate rules
   evaluation_interval: 10s
 
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval' .
+rule_files:
+  - myrules.yml
+
 # A list of scrape configurations that specifies a set of
 # targets and parameters describing how to scrape them.
 scrape_configs:

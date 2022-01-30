@@ -28,6 +28,15 @@ services:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources # data source configuration
       - grafana-data:/var/lib/grafana # used to save dashboards
 
+  alertmanager:
+    image: prom/alertmanager:v0.23.0
+    restart: always
+    ports:
+      - "9093:9093"
+    volumes:
+      - "./alertmanager:/config"
+      - alertmanager-data:/data
+
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node_exporter
@@ -47,3 +56,4 @@ services:
 volumes:
  prometheus-data:
  grafana-data:
+ alertmanager-data:

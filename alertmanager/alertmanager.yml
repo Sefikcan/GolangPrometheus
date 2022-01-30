@@ -1,0 +1,80 @@
+global:
+  smtp_from: 'test@gmail.com'
+  smtp_smarthost: smtp.gmail.com:587
+  smtp_auth_username: 'test@gmail.com'
+  smtp_auth_identity: 'test@gmail.com'
+  smtp_auth_password: 'xxx'
+
+route:
+  # fallback receiver
+  receiver: admin
+  group_wait: 40s # diğer uyarıların bir uyarı grubu için bir bildirim göndermesi için başlangıçta ne kadar bekleneceğini set ederiz
+  group_interval: 2s #bir ilk bildirimin gönderilmiş olduğu bir uyarı grubuna eklenen yeni uyarılar hakkında bir bildirim göndermeden önce ne kadar beklenmesi gerektiğini set ederiz
+  repeat_interval: 1m  # o uyarı için zaten bir bildirim göndermişse, tekrar bir bildirim göndermeden önce ne kadar beklenmesi gerektiğini set ederiz.
+  routes:
+    # Company 1 Solutions.
+    - match_re:
+        app_type: (linux|windows)
+      # fallback receiver
+      receiver: ss-admin
+      routes:
+        # Team 1 in Company 1
+        - match:
+            app_type: linux
+          # fallback receiver
+          receiver: linux-team-admin
+          group_by: [category] #grouping operation
+          routes:
+            - match:
+                severity: critical
+              receiver: linux-team-manager
+            - match:
+                severity: warning
+              receiver: linux-team-lead
+
+        # Team 2 in Company 1
+        - match:
+            app_type: windows
+          # fallback receiver
+          receiver: windows-team-admin
+          routes:
+            - match:
+                severity: critical
+              receiver: windows-team-manager
+            - match:
+                severity: warning
+              receiver: windows-team-lead
+
+
+receivers:
+  - name: admin
+    email_configs:
+      - to: 'test@gmail.com'
+
+  - name: ss-admin
+    email_configs:
+      - to: 'test@gmail.com'
+
+  - name: linux-team-admin
+    email_configs:
+      - to: 'test@gmail.com'
+
+  - name: linux-team-lead
+    email_configs:
+      - to: 'test@gmail.com'
+
+  - name: linux-team-manager
+    email_configs:
+      - to: 'test@gmail.com'
+
+  - name: windows-team-admin
+    email_configs:
+      - to: 'test@gmail.com'
+
+  - name: windows-team-lead
+    email_configs:
+      - to: 'test@gmail.com'
+
+  - name: windows-team-manager
+    email_configs:
+      - to: 'test@gmail.com'

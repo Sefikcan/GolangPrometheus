@@ -51,7 +51,7 @@ func main(){
 		vars := mux.Vars(r)
 		name := vars["name"]
 		greetings := fmt.Sprintf("Username %s :)", name)
-		time.Sleep(5 * time.Second)
+		time.Sleep(6 * time.Second)
 		_, err := rw.Write([]byte(greetings))
 		if err != nil {
 			return
